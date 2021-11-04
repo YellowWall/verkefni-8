@@ -1,7 +1,9 @@
 // TODO hér vantar að sækja viðeigandi föll úr öðrum modules
 import { createButtons, show } from './lib/ui.js';
-import {computerPlay} from '.lib/rock-paper-scissors.js';
-import {checkGame} from '.lib/rock-paper-scissors.js';
+import {computerPlay} from './lib/rock-paper-scissors.js';
+import {checkGame} from './lib/rock-paper-scissors.js';
+import { updateResultScreen } from './lib/ui.js';
+
 /** Hámarks fjöldi best-of leikja, ætti að vera jákvæð heiltala stærri en 0 */
 const MAX_BEST_OF = 10;
 
@@ -35,6 +37,8 @@ let totalWins = 0;
  * ```
  */
 const games = [];
+let n = 0;
+let sigurvegari = "";
 
 
 /**
@@ -46,10 +50,17 @@ const games = [];
  * @param {number} player Það sem spilari spilaði
  */
 function playRound(player) {
-  let talva = computerPlay();
-  let stada = checkGame(player,talva);
+  
+  let computer = computerPlay();
+  let result = checkGame(player,computer);
   // Komumst að því hvað tölva spilaði og athugum stöðu leiks
-
+  if (result !== 0){
+    currentRound = currentRound + 1;
+  }if (result === 1){
+    playerWins = playerWins + 1;
+  } else if (result === -1){
+    computerWins = computerWins + 1;
+  }
   // Uppfærum result glugga áður en við sýnum, hér þarf að importa falli
   updateResultScreen({
     player: player.toString(),
@@ -60,6 +71,8 @@ function playRound(player) {
     playerWins,
     computerWins,
   });
+  show('result');
+  
 
   // Uppfærum teljara ef ekki jafntefli, verðum að gera eftir að við setjum titil
 
@@ -67,6 +80,13 @@ function playRound(player) {
 
   // Sýnum niðurstöðuskjá
 }
+document
+.querySelector('.button.nextRound')
+.addEventListener('click', ()=> round(null));
+document
+.querySelector('.button.finishGame')
+.addEventListener('click', () =>finishGame());
+
 
 /**
  * Fall sem bregst við því þegar smellt er á takka fyrir fjölda umferða
@@ -74,15 +94,31 @@ function playRound(player) {
  */
 function round(e) {
   // TODO útfæra
+  if(e !== null){
+    totalRounds = e.originalTarget.innerHTML;
+    currentRound = 0;
+    playerWins = 0;
+    computerWins = 0;
+  }
+  show('play');
+
+
 }
+
 
 // Takki sem byrjar leik
 document
   .querySelector('.start button')
   .addEventListener('click', () => show('rounds'));
 
+
 document
-  .addEventListener('click', () => createButtons(MAX_BEST_OF, round()));
+  .querySelector('.start button')
+  .addEventListener('click', () => createButtons(MAX_BEST_OF, round));
+
+  document
+  .querySelector('.start button')
+  .addEventListener('click', () => currentRound = 0);
 // Búum til takka
 // createButtons(MAX_BEST_OF, round);
 
@@ -90,20 +126,56 @@ document
 // TODO
 document
   .querySelector('button.scissor')
-  .addEventListener('click', ()=> playRound(1));
+  .addEventListener('click', ()=> playRound('1'));
 
 document
   .querySelector('button.paper')
-  .addEventListener('click', () => playRound(2));
+  .addEventListener('click', () => playRound('2'));
 
 document
   .querySelector('button.rock')
-  .addEventListener('click', () => playRound(3));
+  .addEventListener('click', () => playRound('3'));
 /**
  * Uppfærir stöðu yfir alla spilaða leiki þegar leik lýkur.
  * Gerir tilbúið þannig að hægt sé að spila annan leik í framhaldinu.
  */
 function finishGame() {
+  if (playerWins > totalRounds/2){
+    let win = true;
+    games[n] = {playerWins, computerWins, win};
+    sigurvegari = "Þú vannst ";
+    totalWins++;
+    n++;
+  }else if (computerWins > totalRounds/2){
+    let win = false;
+    games[n] = {playerWins, computerWins, win};
+    sigurvegari = "Tölva vann ";
+    n++;
+  }
+  currentRound = 0;
+  if(n > 0){
+    const gameStats = document.querySelector('.games__list');
+    const f = document.createElement('li');
+    f.className = ('gameRes');
+    f.textContent = (sigurvegari + playerWins + "-" + computerWins);
+    gameStats.appendChild(f);
+    const fjoldi = document.querySelector('.games__played');
+    fjoldi.textContent = (n);
+    const fjoldiSigra = document.querySelector('.games__wins');
+    fjoldiSigra.textContent = (totalWins);
+    const fjoldiOsigra = document.querySelector('.games__losses');
+    let g = n - totalWins;
+    fjoldiOsigra.textContent = (g);
+    const hlutfSigra = document.querySelector('.games__winratio');
+    let hlutf = (totalWins/n)*100;
+    hlutf = hlutf.toFixed(2);
+    let evilHlutf = 100.00 - hlutf;
+    evilHlutf = evilHlutf.toFixed(2);
+    hlutfSigra.textContent = (hlutf);
+    const hlutfOsigra = document.querySelector('.games__lossratio');
+    hlutfOsigra.textContent = (evilHlutf);
+  }
+  show('rounds')
   // Bætum við nýjasta leik
 
   // Uppfærum stöðu
@@ -116,5 +188,4 @@ function finishGame() {
 }
 
 // Næsta umferð og ljúka leik takkar
-document.querySelector('button.finishGame').addEventListener('click', finishGame);
 // TODO takki sem fer með í næstu umferð
