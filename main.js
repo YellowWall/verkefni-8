@@ -39,6 +39,7 @@ let totalWins = 0;
 const games = [];
 let n = 0;
 let sigurvegari = "";
+let result = 0;
 
 
 /**
@@ -52,7 +53,7 @@ let sigurvegari = "";
 function playRound(player) {
   
   let computer = computerPlay();
-  let result = checkGame(player,computer);
+  result = checkGame(player,computer);
   // Komumst að því hvað tölva spilaði og athugum stöðu leiks
   if (result === 1){
     playerWins = playerWins + 1;
@@ -98,10 +99,11 @@ function round(e) {
     playerWins = 0;
     computerWins = 0;
   }
-  show('play');
   if (result !== 0){
-    currentRound = currentRound + 1;
+  currentRound = currentRound + 1;
   }
+  show('play');
+
 
 }
 
