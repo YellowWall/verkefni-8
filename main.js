@@ -54,9 +54,7 @@ function playRound(player) {
   let computer = computerPlay();
   let result = checkGame(player,computer);
   // Komumst að því hvað tölva spilaði og athugum stöðu leiks
-  if (result !== 0){
-    currentRound = currentRound + 1;
-  }if (result === 1){
+  if (result === 1){
     playerWins = playerWins + 1;
   } else if (result === -1){
     computerWins = computerWins + 1;
@@ -95,13 +93,15 @@ document
 function round(e) {
   // TODO útfæra
   if(e !== null){
-    totalRounds = e.originalTarget.value;
-    currentRound = 0;
+    totalRounds = Number.parseInt(e.target.innerText);
+    currentRound = 1;
     playerWins = 0;
     computerWins = 0;
   }
   show('play');
-
+  if (result !== 0){
+    currentRound = currentRound + 1;
+  }
 
 }
 
@@ -176,16 +176,5 @@ function finishGame() {
     hlutfOsigra.textContent = (evilHlutf);
   }
   show('rounds')
-  // Bætum við nýjasta leik
 
-  // Uppfærum stöðu
-
-  // Bætum leik við lista af spiluðum leikjum
-
-  // Núllstillum breytur
-
-  // Byrjum nýjan leik!
 }
-
-// Næsta umferð og ljúka leik takkar
-// TODO takki sem fer með í næstu umferð
