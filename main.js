@@ -98,6 +98,7 @@ function round(e) {
     currentRound = 1;
     playerWins = 0;
     computerWins = 0;
+    result = 0;
   }
   if (result !== 0){
   currentRound = currentRound + 1;
