@@ -95,7 +95,7 @@ document
 function round(e) {
   // TODO útfæra
   if(e !== null){
-    totalRounds = e.originalTarget.innerHTML;
+    totalRounds = e.originalTarget.value;
     currentRound = 0;
     playerWins = 0;
     computerWins = 0;
